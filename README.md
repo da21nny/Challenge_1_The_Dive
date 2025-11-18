@@ -85,6 +85,3 @@ Esta no es solo una simulación. Es una batalla épica entre instinto y estrateg
 Con Python como tu espada y Minimax como tu escudo, diseña un mundo donde la inteligencia decide el destino del juego. ¿Podrá el ratón burlar al gato? ¿O será el felino quien domine el tablero con frialdad matemática?
 
 Tu código cuenta la historia. Y el laberinto te espera. 🧀🐱
-
-ni12OiOuQzuiTUK8npdjCA
-
