@@ -47,7 +47,7 @@ def crear_laberinto(ancho, alto):
     return laberinto # Retorna el laberinto generado
 
 # Generar laberinto de tamaño fijo
-laberinto = crear_laberinto(20, 10)
+laberinto = crear_laberinto(15, 10)
 
 # --- Funcion de Movimientos Validos ---
 def movimientos_validos(posicion, laberinto):
@@ -141,11 +141,11 @@ raton, gato = posicionar_gato_raton(laberinto, 10)
 salida = posicionar_salida(laberinto, raton, gato, 10)
 
 #--- FUNCION PARA MOSTRAR EL LABERINTO CON POSICIONES ---
-def mostrar_laberinto(raton, gato):
+def mostrar_laberinto(raton, gato, raton_visible):
     for i in range(len(laberinto)):
         fila = ""
         for j in range(len(laberinto[0])):
-            if (i, j) == raton:
+            if (i, j) == raton and raton_visible:
                 fila += "🐭"
             elif (i, j) == gato:
                 fila += "🐱"
@@ -165,13 +165,14 @@ def evaluar_estado(laberinto, raton, gato, salida):
     valor = (dist_raton_gato * 3) - (dist_raton_salida * 4)
 
     #Condicion que penaliza si el gato bloquea salida al raton
-    if dist_gato_salida < dist_raton_salida:
-        valor =-10
+    # if dist_gato_salida < dist_raton_salida:
+    #     valor =-5
     if raton == gato:
-        return -100
+        return -1000
     elif raton == salida:
-        return 100
-    return valor
+        return 1000
+    desempate = random.random() / 10
+    return valor + desempate 
 
 
 def miniMax(laberinto, raton, gato, salida, profundidad, es_turno_raton):
@@ -217,42 +218,52 @@ def mejor_movimiento_gato(laberinto, raton, gato, salida):
 
 
 contador_turno = 1 #Una variable para contar los turnos dentro del ciclo while
-es_turno_raton = True
+es_turno_raton = True #para que el ciclo while no termine hasta un break en una condicion
 while True:
     print(f"Turno: {contador_turno} - {'Raton' if es_turno_raton else 'Gato'}")
-    mostrar_laberinto(raton, gato)
+    mostrar_laberinto(raton, gato, raton_visible = True)
     time.sleep(0.5)    
 
     if raton == gato:
+        mostrar_laberinto(raton, gato, raton_visible = False)
         print("El gato atrapo al raton")
         break
     if raton == salida:
+        mostrar_laberinto(raton, gato, raton_visible = False)
         print("El Raton logró escapar")
         break
 
     if es_turno_raton:
+        #utilizamos un guion (_) para guardar valores que no necesitamos al llamar a la
+        #funcion mejor_movimiento, es una convencion en python creando una variable
+        #que no utilizaremos
         nuevo_raton, _ = mejor_movimiento_raton(laberinto, raton, gato, salida)
         raton = nuevo_raton
         print(f"Raton se movio a: {raton}")
         if raton == gato:
+            mostrar_laberinto(raton, gato, raton_visible = False)
             print("El gato atrapo al raton")
             break
         if raton == salida:
+            mostrar_laberinto(raton, gato, raton_visible = False)
             print("El Raton logró escapar")
             break
                 
     else:
+        #utilizamos un guion (_) para guardar valores que no necesitamos al llamar a la
+        #funcion mejor_movimiento, es una convencion en python creando una variable
+        #que no utilizaremos
         nuevo_gato, _ = mejor_movimiento_gato(laberinto, raton, gato, salida)
         gato = nuevo_gato
         print(f"Gato se movio a: {gato}")
         if gato == raton:
+            mostrar_laberinto(raton, gato, raton_visible = False)
             print("El gato atrapo al raton")
             break
 
     if contador_turno > 150:
-        print("Fin de los turnos, Laberinto no optimizado")
+        print("Fin de los turnos, Gato y raton se pusieron a bailar sin parar")
+        break
 
     contador_turno += 1
     es_turno_raton = not es_turno_raton
-
-mostrar_laberinto(raton, gato)
